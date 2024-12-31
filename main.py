@@ -2,7 +2,7 @@
 Author: Kainan Yang ykn0309@whu.edu.cn
 Date: 2024-12-30 17:15:19
 LastEditors: Kainan Yang ykn0309@whu.edu.cn
-LastEditTime: 2024-12-30 20:52:52
+LastEditTime: 2024-12-31 16:05:47
 FilePath: /balanceANN/main.py
 '''
 import numpy as np
@@ -15,24 +15,24 @@ def run(X, Y):
     for i in range(query_num):
         x = Y[i]
         ann = ANN(X, x)
-        true_idx = ann.iNN()
+        true_idx = sift_groundtruth[i][0]
         lloyd_idx, _, _ = ann.lloyd_ANN()
         balanced_idx, _, _ = ann.balanced_ANN()
         if lloyd_idx == true_idx:
             lloyd_success_count += 1
         if balanced_idx == true_idx:
             balanced_success_count += 1
+    print(lloyd_success_count, balanced_success_count)
     lloyd_precision = lloyd_success_count / query_num
     balanced_precision = balanced_success_count / query_num
     return lloyd_precision, balanced_precision
 
 if __name__ == '__main__':
-    X = np.random.rand(100, 2)  # 随机生成数据
-    query_point = np.array([0.5, 0.5])  # 查询点
-
-    ann = ANN(X, query_point)
-    idx, nearest_point, distance = ann.lloyd_ANN()
-    print(f"Lloyd: {nearest_point}, 距离: {distance}")
-    
-    idx, nearest_point, distance = ann.balanced_ANN()
-    print(f"Balanced: {nearest_point}, 距离: {distance}")
+    sift_base = np.fromfile('./siftsmall/siftsmall_base.fvecs', dtype=np.float32)
+    sift_base = sift_base.reshape(-1, 129)[:1000, 1:]
+    sift_query = np.fromfile('./siftsmall/siftsmall_query.fvecs', dtype=np.float32)
+    sift_query = sift_query.reshape(-1, 129)[:, 1:]
+    sift_groundtruth = np.fromfile('./siftsmall/siftsmall_groundtruth.ivecs', dtype=np.int32)
+    sift_groundtruth = sift_groundtruth.reshape(-1, 101)[:1000, 1:]
+    lloyd_precision, balanced_precision = run(sift_base, sift_query)
+    print(lloyd_precision, balanced_precision)
