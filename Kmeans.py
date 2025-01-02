@@ -2,15 +2,7 @@
 Author: Kainan Yang ykn0309@whu.edu.cn
 Date: 2024-12-30 11:59:11
 LastEditors: Kainan Yang ykn0309@whu.edu.cn
-LastEditTime: 2024-12-31 16:15:01
-FilePath: /balancedANN/Kmeans.py
-Description: 这是默认设置,请设置`customMade`, 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
-'''
-'''
-Author: Kainan Yang ykn0309@whu.edu.cn
-Date: 2024-12-30 11:59:11
-LastEditors: Kainan Yang ykn0309@whu.edu.cn
-LastEditTime: 2024-12-31 12:01:07
+LastEditTime: 2025-01-02 11:21:05
 FilePath: /balanceANN/Kmeans.py
 '''
 import numpy as np
@@ -50,17 +42,19 @@ class Kmeans:
         for i in range(self.k):
             self.centroids[i] = np.array(np.mean(self.X[self.labels == i], axis=0) if np.any(self.labels == i) else self.centroids[i])
 
-    def run_lloyd_kmeans(self):
-        # for i in range(self.max_iterations):
-        #     old_labels = self.labels.copy()
-        #     self.lloyd_assign()
-        #     self.refine()
-        #     if np.all(old_labels == self.labels):
-        #         break
-        kmeans = KMeans(n_clusters=self.k, random_state=42)
-        kmeans.fit(self.X)
-        self.labels = kmeans.labels_
-        self.centroids = kmeans.cluster_centers_
+    def run_lloyd_kmeans(self, method=0):
+        if method == 0:
+            for i in range(self.max_iterations):
+                old_labels = self.labels.copy()
+                self.lloyd_assign()
+                self.refine()
+                if np.all(old_labels == self.labels):
+                    break
+        else:
+            kmeans = KMeans(n_clusters=self.k, random_state=42)
+            kmeans.fit(self.X)
+            self.labels = kmeans.labels_
+            self.centroids = kmeans.cluster_centers_
         return self.labels, self.centroids
     
     def run_balanced_kmeans(self):
